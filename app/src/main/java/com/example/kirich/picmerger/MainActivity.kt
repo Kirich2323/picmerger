@@ -1,50 +1,26 @@
 package com.example.kirich.picmerger
 
-import android.R.attr.*
 import android.app.Activity
-import android.app.PendingIntent.getActivity
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
-import android.content.res.AssetFileDescriptor
-import com.nbsp.materialfilepicker.ui.FilePickerActivity
-import java.util.regex.Pattern
-import com.nbsp.materialfilepicker.MaterialFilePicker
 import android.graphics.Bitmap
 import android.util.Log
-import android.graphics.BitmapFactory
-import android.graphics.Picture
-import android.media.*
-import android.net.Uri
-import android.os.Environment
-import android.os.Handler
-import android.os.Looper
-import android.support.v4.content.ContextCompat
-import org.jcodec.api.SequenceEncoder
 import org.jcodec.api.android.AndroidSequenceEncoder
-import org.jcodec.common.model.ColorSpace.RGB
 import android.provider.MediaStore
 import android.view.View
 import android.widget.*
 import com.googlecode.mp4parser.FileDataSourceImpl
-import com.googlecode.mp4parser.authoring.Movie
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator
 import com.googlecode.mp4parser.authoring.tracks.AACTrackImpl
 import com.googlecode.mp4parser.authoring.tracks.CroppedTrack
-import com.googlecode.mp4parser.util.ByteBufferByteChannel
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jcodec.containers.mp4.MP4Util
 import java.io.*
-import java.lang.Long.max
 import java.lang.Long.min
-import java.nio.ByteBuffer
-import java.nio.channels.FileChannel
-
 
 class MainActivity : AppCompatActivity() {
     private val pickImageReqCode = 1
-    private val pickAudioReqCode = 2
 
     private var imagePathList: List<String>? = null
     private var bitmapList: MutableList<Bitmap?>? = null
@@ -78,15 +54,11 @@ class MainActivity : AppCompatActivity() {
             val enc = AndroidSequenceEncoder.createSequenceEncoder(file, frameRate)
             val videoPath = file.absolutePath
 
-            Log.d("kirich", "File created")
             for (i: Bitmap? in bitmapList!!) {
                 for (j in 0..frameRate) {
                     if (i != null) {
                         progressBar?.post { progressBar?.progress = progressBar?.progress as Int + 1 }
                         enc.encodeImage(i)
-                    }
-                    else {
-                        Log.d("kirich", "bitmap is null")
                     }
                 }
             }
@@ -100,8 +72,6 @@ class MainActivity : AppCompatActivity() {
             val filePath = outputFile.absolutePath
 
             val inputStream = resources.openRawResource(R.raw.music)
-
-            //val audioPath = File("android.resource://" + packageName + "/raw/music")
             var tempFile = File.createTempFile("audio", ".aac")
             copyFile(inputStream, FileOutputStream(tempFile))
             var audioFile = tempFile.absolutePath
@@ -130,7 +100,6 @@ class MainActivity : AppCompatActivity() {
 
         }.start()
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
